@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Letter from "./components/Letter";
 

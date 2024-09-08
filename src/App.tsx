@@ -190,6 +190,7 @@ function App() {
   // const mountCountRef = useRef(0);
 
   useEffect(() => {
+    console.log("Wesbite mounted");
     const randomNumber: number = Math.floor(Math.random() * gameWords.length);
     setWordleWord(gameWords[randomNumber]);
   }, []);

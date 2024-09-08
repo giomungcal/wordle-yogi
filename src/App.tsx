@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import Letter from "./components/Letter";
 
@@ -211,7 +211,7 @@ function App() {
   const guessedWordsArray: string[] = Object.keys(resultsArray);
   const didUserAttemptToGuess: boolean = guessedWordsArray.length > 0;
 
-  async function handleWordSubmit(e) {
+  async function handleWordSubmit(e: FormEvent) {
     e.preventDefault();
 
     const word: string = guessWord.toLowerCase();
@@ -219,10 +219,11 @@ function App() {
 
     const isGuessWord5Letters: boolean = word.length === 5;
 
-    if (isGameComplete) {
-      toast.success("CLICK RESTART :>");
-      return;
-    }
+    // Note: Not needed anymore since input is hidden once complete
+    // if (isGameComplete) {
+    //   toast.success("CLICK RESTART :>");
+    //   return;
+    // }
 
     if (guessedWordsArray.some((key) => key === word)) {
       toast.error("Word already guessed");

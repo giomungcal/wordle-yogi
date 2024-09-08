@@ -186,15 +186,12 @@ function App() {
   //   fetchWord();
   // }, []);
 
-  const mountCountRef = useRef(0);
+  // Note: Removed since it does not mount twice when hosted in Vercel
+  // const mountCountRef = useRef(0);
 
   useEffect(() => {
-    if (mountCountRef.current === 1) {
-      const randomNumber: number = Math.floor(Math.random() * gameWords.length);
-      setWordleWord(gameWords[randomNumber]);
-      return;
-    }
-    mountCountRef.current += 1;
+    const randomNumber: number = Math.floor(Math.random() * gameWords.length);
+    setWordleWord(gameWords[randomNumber]);
   }, []);
 
   const [guessWord, setGuessWord] = useState("");

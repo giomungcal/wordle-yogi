@@ -1,7 +1,7 @@
-function Letter({ letter, color }) {
+function Letter({ letter, color, textColor }) {
   return (
     <div
-      className={`letter text-white text-2xl ${color} w-[50px] h-[50px] flex justify-center items-center`}
+      className={`letter silkscreen-bold ${textColor} rounded-lg text-2xl ${color} w-[40px] h-[40px] sm:w-[55px] sm:h-[55px] flex justify-center items-center`}
     >
       {letter}
     </div>

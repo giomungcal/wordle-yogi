@@ -212,7 +212,7 @@ function App() {
     game: "",
   });
 
-  // Fetch a new wordle at mount - NOT USING THIS SINCE I CREATE MY OWN DATABAS OF WORDS
+  // Fetch a new wordle at mount - NOT USING THIS SINCE I CREATE MY OWN DATABASE OF WORDS
   // useEffect(() => {
   //   async function fetchWord() {
   //     try {
@@ -237,7 +237,6 @@ function App() {
     if (mountCountRef.current === 1) {
       const randomNumber: number = Math.floor(Math.random() * 150);
       setWordleWord(gameWords[randomNumber]);
-      console.log(gameWords[randomNumber]);
       return;
     }
     mountCountRef.current += 1;
@@ -338,7 +337,6 @@ function App() {
     setIsGameComplete(false);
     setNumberOfAttempts(0);
     setGuessWord("");
-    console.log(gameWords[randomNumber]);
   }
 
   return (
@@ -411,9 +409,13 @@ function App() {
           <div className="sm:mt-8">
             {isGameComplete || numberOfAttempts === 6 ? (
               <>
-                <h1 className="text-[#FFF70F] bg-slate-900 shadow-2xl p-4 text-xl self-center">
-                  <span>WORD:</span> {wordleWord.word}
-                </h1>
+                <div
+                  onClick={handleResetGame}
+                  className="cursor-pointer text-[#FFF70F] bg-slate-900 shadow-2xl p-4 text-xl self-center flex flex-col justify-center items-center"
+                >
+                  <h3>WORD: {wordleWord.word}</h3>
+                  <p className="text-xs text-[#4ACC2A]">restart</p>
+                </div>
               </>
             ) : (
               <form onSubmit={(e) => handleWordSubmit(e)}>

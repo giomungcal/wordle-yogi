@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import InputField from "./components/InputField";
 import Letter from "./components/Letter";
 
 function App() {
@@ -168,7 +169,7 @@ function App() {
     game: "",
   });
 
-  // Fetch a new wordle at mount - NOT USING THIS SINCE I CREATE MY OWN DATABASE OF WORDS
+  // Fetch a new wordle at mount - NOT USING THIS SINCE I CREATED MY OWN DATABASE OF WORDS
   // useEffect(() => {
   //   async function fetchWord() {
   //     try {
@@ -199,12 +200,11 @@ function App() {
     getNewWord();
   }, []);
 
-  const [guessWord, setGuessWord] = useState("");
-
   type ResultsArrayType = {
     [key: string]: number[];
   };
 
+  const [guessWord, setGuessWord] = useState<string>("");
   const [resultsArray, setResultsArray] = useState<ResultsArrayType>({});
 
   const [numberOfAttempts, setNumberOfAttempts] = useState<number>(0);
@@ -235,14 +235,19 @@ function App() {
     if (isGuessWord5Letters) {
       const result: number[] | undefined = await isValidWord(word);
 
-      if (result && result.every((num) => num === 2)) {
-        toast.success("You have guessed the word!");
-        setIsGameComplete(true);
-      }
-
       if (result) {
+        const isWordGuessed: boolean = result.every((num) => num === 2);
         setResultsArray((prevState) => ({ ...prevState, [word]: result }));
         setNumberOfAttempts((prev) => prev + 1);
+
+        if (isWordGuessed) {
+          toast.success("You have guessed the word!");
+          setIsGameComplete(true);
+        }
+
+        if (numberOfAttempts === 5 && !isWordGuessed) {
+          toast.error("Try again :<");
+        }
       }
     }
   }
@@ -344,20 +349,13 @@ function App() {
           {isGameComplete || numberOfAttempts === 6 ? (
             <></>
           ) : (
-            <form
-              className="sm:hidden block mb-8"
-              onSubmit={(e) => handleWordSubmit(e)}
-            >
-              <input
-                type="text"
-                maxLength={5}
-                minLength={5}
-                placeholder={isSearchingTheWord ? "SEARCHING" : "GUESS"}
-                onChange={(e) => setGuessWord(e.target.value)}
-                className="border-none w-[220px] h-[55px] bg-[#302C27] text-white text-xl text-center"
-                value={guessWord}
-              />
-            </form>
+            <InputField
+              screenVisibility={"sm:hidden block"}
+              handleWordSubmit={handleWordSubmit}
+              isSearchingTheWord={isSearchingTheWord}
+              setGuessWord={setGuessWord}
+              guessWord={guessWord}
+            />
           )}
 
           <div className="h-[70%] flex flex-col justify-start items-center">
@@ -401,20 +399,13 @@ function App() {
                 </div>
               </>
             ) : (
-              <form
-                className="hidden sm:block"
-                onSubmit={(e) => handleWordSubmit(e)}
-              >
-                <input
-                  type="text"
-                  maxLength={5}
-                  minLength={5}
-                  placeholder={isSearchingTheWord ? "SEARCHING" : "GUESS"}
-                  onChange={(e) => setGuessWord(e.target.value)}
-                  className="border-none w-[220px] h-[55px] bg-[#302C27] text-white text-xl text-center"
-                  value={guessWord}
-                />
-              </form>
+              <InputField
+                screenVisibility={"hidden sm:block"}
+                handleWordSubmit={handleWordSubmit}
+                isSearchingTheWord={isSearchingTheWord}
+                setGuessWord={setGuessWord}
+                guessWord={guessWord}
+              />
             )}
           </div>
         </div>

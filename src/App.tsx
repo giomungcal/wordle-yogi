@@ -23,7 +23,7 @@ function App() {
     { word: "storm", game: "elden ring" },
     { word: "beast", game: "elden ring" },
     { word: "blade", game: "elden ring" },
-    { word: "grave", game: "elden ring" },
+    { word: "grace", game: "elden ring" },
     { word: "chaos", game: "elden ring" },
     { word: "ruins", game: "elden ring" },
     { word: "slash", game: "elden ring" },
@@ -40,6 +40,7 @@ function App() {
     { word: "curse", game: "elden ring" },
     { word: "blood", game: "elden ring" },
     { word: "flame", game: "elden ring" },
+    { word: "elden", game: "elden ring" },
 
     { word: "fates", game: "final fantasy 14" },
     { word: "moons", game: "final fantasy 14" },
@@ -186,13 +187,16 @@ function App() {
   //   fetchWord();
   // }, []);
 
-  // Note: Removed since it does not mount twice when hosted in Vercel
+  // Note: Removed href count - since it does not mount twice when hosted in Vercel
   // const mountCountRef = useRef(0);
 
-  useEffect(() => {
-    console.log("Wesbite mounted");
+  function getNewWord() {
     const randomNumber: number = Math.floor(Math.random() * gameWords.length);
     setWordleWord(gameWords[randomNumber]);
+  }
+
+  useEffect(() => {
+    getNewWord();
   }, []);
 
   const [guessWord, setGuessWord] = useState("");
@@ -243,17 +247,22 @@ function App() {
     }
   }
 
+  const [isSearchingTheWord, setIsSearchingTheWord] = useState<boolean>(false);
+
   async function isValidWord(word: string) {
     try {
+      setIsSearchingTheWord(true);
       const response = await fetch(
         `https://api.datamuse.com/words?sp=${word}&max=1`
       );
+      if (!response.ok) {
+        throw new Error("There is a network issue when validating the word.");
+      }
       const data = await response.json();
-
       const isWordValid: boolean = data.length && data[0].word === word;
 
       if (!isWordValid) {
-        toast.error("Word does not exist!");
+        toast.error(`${word} is not a word!`);
         setGuessWord("");
         return;
       }
@@ -281,12 +290,13 @@ function App() {
       return includedInTheWordArray;
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSearchingTheWord(false);
     }
   }
 
   function handleResetGame() {
-    const randomNumber: number = Math.floor(Math.random() * 150);
-    setWordleWord(gameWords[randomNumber]);
+    getNewWord();
     setResultsArray({});
     setIsGameComplete(false);
     setNumberOfAttempts(0);
@@ -319,7 +329,7 @@ function App() {
         </div>
         <div className="flex flex-col justify-center items-center mb-2">
           <h2 className="text-black text-sm">the word is about</h2>
-          <h1 className="silkscreen-regular text-black text-xl sm:text-3xl  mt-[-6px] ">
+          <h1 className="silkscreen-regular text-black text-2xl sm:text-3xl  mt-[-6px] ">
             {wordleWord.game.toUpperCase()}
           </h1>
           <h3
@@ -331,6 +341,25 @@ function App() {
         </div>
 
         <div className="flex flex-col justify-center items-center w-full h-[75%]">
+          {isGameComplete || numberOfAttempts === 6 ? (
+            <></>
+          ) : (
+            <form
+              className="sm:hidden block mb-8"
+              onSubmit={(e) => handleWordSubmit(e)}
+            >
+              <input
+                type="text"
+                maxLength={5}
+                minLength={5}
+                placeholder={isSearchingTheWord ? "SEARCHING" : "GUESS"}
+                onChange={(e) => setGuessWord(e.target.value)}
+                className="border-none w-[220px] h-[55px] bg-[#302C27] text-white text-xl text-center"
+                value={guessWord}
+              />
+            </form>
+          )}
+
           <div className="h-[70%] flex flex-col justify-start items-center">
             {didUserAttemptToGuess &&
               guessedWordsArray.map((word, index) => (
@@ -372,12 +401,15 @@ function App() {
                 </div>
               </>
             ) : (
-              <form onSubmit={(e) => handleWordSubmit(e)}>
+              <form
+                className="hidden sm:block"
+                onSubmit={(e) => handleWordSubmit(e)}
+              >
                 <input
                   type="text"
                   maxLength={5}
                   minLength={5}
-                  placeholder="guess"
+                  placeholder={isSearchingTheWord ? "SEARCHING" : "GUESS"}
                   onChange={(e) => setGuessWord(e.target.value)}
                   className="border-none w-[220px] h-[55px] bg-[#302C27] text-white text-xl text-center"
                   value={guessWord}
